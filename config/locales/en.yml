@@ -947,6 +947,7 @@ en:
       clear_confirm: Are you sure to want to delete all destinations? Existing routes will be lost.
     form:
       ref_help: A free reference
+      street_help: Number and street name, ex. 42 Quality street
       detail_help: Non geocoded address complement, flat number for example
       comment_help: Delivery informations
       locate_manually: Locate manually on the map
@@ -2218,7 +2219,7 @@ en:
           decide itself quantities, if you specify a value it will be used as a minimum
           to fill / empty.
       take_over_default: default
-      take_over_help: If empty, use the default value
+      take_over_help: If empty, use the default value, format hh:mm:ss
       open_close1: Time window 1
       open_close2: Time window 2
       priority: Priority

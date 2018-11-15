@@ -988,6 +988,7 @@
         tournées existantes seront perdues.'
     'form':
       'ref_help': 'Référence libre'
+      'street_help': 'Numéro et nom de voie, ex. 18 rue de la paix'
       'detail_help': 'Complément d''adresse non géocodable, ex. numéro d''escalier'
       'comment_help': 'Informations nécessaires pour la livraison'
       'locate_manually': 'Positionner manuellement sur la carte'
@@ -2372,7 +2373,7 @@
           l''optimisation déterminera elle-même la quantité, si vous précisez une
           valeur elle sera un minimum à remplir / vider.'
       'take_over_default': 'défaut'
-      'take_over_help': 'Si vide utilise la valeur par défaut'
+      'take_over_help': 'Si vide utilise la valeur par défaut, format hh:mm:ss'
       'open_close1': 'Plage horaire 1'
       'open_close2': 'Plage horaire 2'
       'priority': 'Priorité'
