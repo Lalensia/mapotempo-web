@@ -23,4 +23,12 @@ module CustomersHelper
       concat '</span>'.html_safe if Rails.configuration.max_plannings_default && Rails.configuration.max_plannings_default <= customer.plannings.count
     end
   end
+
+  def has_vehicle_with_unauthorized_router(customer)
+    customer.profile.routers.pluck(:id).exclude?(customer.vehicles.pluck(:router_id)) if customer.profile.present?
+  end
+
+  def has_user_with_unauthorized_layer(customer)
+    customer.profile.layers.pluck(:id).exclude?(customer.users.pluck(:layer_id)) if customer.profile.present?
+  end
 end

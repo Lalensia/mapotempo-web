@@ -206,7 +206,53 @@ var customers_edit = function(params) {
   }
 
   routerOptionsSelect('#customer_router', params);
+
+  routersAllowedForProfile(params);
+  $('#customer_profile_id').on('click', function() {
+    routersAllowedForProfile(params);
+  });
+  $('#customer_router').on('click', function() {
+    removeRouterWarning();
+  });
 };
+
+function routersAllowedForProfile(params) {
+  var routers_modes_by_profile = JSON.parse(params.routers_modes_by_profile);
+  var profile_id = $('#customer_profile_id').val();
+  if (profile_id == '' || profile_id === undefined) return;
+  var routers_modes_authorized = routers_modes_by_profile[profile_id];
+  var router_options = $('#customer_router option');
+
+  for (var i = 0, optionsLength = router_options.length; i < optionsLength; i++) {
+    hideOrDisplayRouterMode(routers_modes_authorized, router_options[i].value, i);
+  }
+
+  if (routers_modes_authorized.includes($('#customer_router option[selected="selected"]').val())) {
+    removeRouterWarning();
+  } else {
+    displayRouterWarning();
+  }
+}
+
+function hideOrDisplayRouterMode(routers_modes_authorized = [], option_evaluated, key) {
+  if (routers_modes_authorized.includes(option_evaluated)) {
+    $('#customer_router option').eq(key).removeClass('hidden');
+  } else {
+    $('#customer_router option').eq(key).addClass('hidden');
+  }
+}
+
+function removeRouterWarning() {
+  $("#customer_router_input").removeClass('alert-warning');
+  $("#customer_router_input").removeClass('alert');
+  $(".router-unauthorized").addClass('hidden');
+}
+
+function displayRouterWarning() {
+  $("#customer_router_input").addClass('alert');
+  $("#customer_router_input").addClass('alert-warning');
+  $(".router-unauthorized").removeClass('hidden');
+}
 
 var devicesObserveCustomer = (function() {
   'use strict';
@@ -372,7 +418,7 @@ var devicesObserveCustomer = (function() {
         var email = (driver.updated) ? driver.email : driver.email + ' : ' + driver.password;
         notice(msg + "\r\n" + email);
       });
-    }
+    };
 
     // Create company with mobile users for each vehicle with email
     $('#create-customer-device').on('click', function(event) {
@@ -391,8 +437,8 @@ var devicesObserveCustomer = (function() {
           $('#create-customer-device').attr('disabled', false);
 
           if (data.error) {
-             requestCompleted(data);
-             return;
+            requestCompleted(data);
+            return;
           }
 
           requestCompleted(data.drivers);
