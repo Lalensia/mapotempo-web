@@ -547,7 +547,8 @@ CREATE TABLE public.resellers (
     customer_audience_url character varying,
     customer_behavior_url character varying,
     sms_api_key character varying,
-    sms_api_secret character varying
+    sms_api_secret character varying,
+    authorized_fleet_administration boolean DEFAULT false
 );
 
 
@@ -2760,5 +2761,6 @@ INSERT INTO schema_migrations (version) VALUES ('20180628142222');
 
 INSERT INTO schema_migrations (version) VALUES ('20180629081835');
 
-INSERT INTO schema_migrations (version) VALUES ('20181227141833');
+INSERT INTO schema_migrations (version) VALUES ('20180621101958');
 
+INSERT INTO schema_migrations (version) VALUES ('20181220135439');
