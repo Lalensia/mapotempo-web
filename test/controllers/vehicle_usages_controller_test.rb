@@ -17,7 +17,7 @@ class VehicleUsagesControllerTest < ActionController::TestCase
     assert ability.cannot? :manage, @vehicle_usage
 
     get :edit, id: vehicle_usages(:vehicle_usage_two_one)
-    assert_response :not_found
+    assert_response :redirect
   end
 
   test 'should get edit' do

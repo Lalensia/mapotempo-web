@@ -15,7 +15,7 @@ class TagsControllerTest < ActionController::TestCase
     assert ability.cannot? :manage, @tag
 
     get :edit, id: tags(:tag_three)
-    assert_response :not_found
+    assert_response :redirect
   end
 
   test 'should get index' do

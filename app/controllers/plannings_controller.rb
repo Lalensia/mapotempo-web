@@ -21,13 +21,13 @@ require 'zip'
 
 class PlanningsController < ApplicationController
   before_action :authenticate_user!
+  load_and_authorize_resource
   UPDATE_ACTIONS = [:update, :move, :refresh, :switch, :automatic_insert, :update_stop, :active, :reverse_order, :apply_zonings, :optimize, :optimize_route]
   before_action :set_planning, only: [:show, :edit, :duplicate, :destroy] + UPDATE_ACTIONS
   before_action :check_no_existing_job, only: UPDATE_ACTIONS
   around_action :includes_sub_models, except: [:index, :new, :create]
   around_action :over_max_limit, only: [:create, :duplicate]
 
-  load_and_authorize_resource
 
   include PlanningExport
 

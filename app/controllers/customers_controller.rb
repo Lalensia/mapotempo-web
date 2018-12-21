@@ -17,9 +17,10 @@
 #
 class CustomersController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_customer, only: [:edit, :update, :delete_vehicle]
 
   load_and_authorize_resource
+
+  before_action :set_customer, only: [:edit, :update, :delete_vehicle]
 
   include Devices::Helpers
 

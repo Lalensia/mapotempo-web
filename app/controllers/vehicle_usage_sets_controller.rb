@@ -17,10 +17,11 @@
 #
 class VehicleUsageSetsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_vehicle_usage_set, only: [:show, :edit, :update, :destroy, :duplicate]
-  around_action :over_max_limit, only: [:create, :duplicate]
 
   load_and_authorize_resource
+
+  before_action :set_vehicle_usage_set, only: [:show, :edit, :update, :destroy, :duplicate]
+  around_action :over_max_limit, only: [:create, :duplicate]
 
   include LinkBack
 

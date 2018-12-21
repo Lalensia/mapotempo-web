@@ -32,7 +32,7 @@ class PlanningsControllerTest < ActionController::TestCase
     assert ability.cannot? :manage, @planning
 
     get :edit, id: plannings(:planning_three)
-    assert_response :not_found
+    assert_response :redirect
   end
 
   test 'should get index' do

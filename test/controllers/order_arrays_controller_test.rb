@@ -18,7 +18,7 @@ class OrderArraysControllerTest < ActionController::TestCase
     assert ability.cannot? :manage, @order_array
 
     get :edit, id: order_arrays(:order_array_three)
-    assert_response :not_found
+    assert_response :redirect
   end
 
   test 'should get index' do

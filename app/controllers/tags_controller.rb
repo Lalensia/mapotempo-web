@@ -17,10 +17,11 @@
 #
 class TagsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_tag, only: [:edit, :update, :destroy]
-  before_action :icons_table, except: [:index]
 
   load_and_authorize_resource
+
+  before_action :set_tag, only: [:edit, :update, :destroy]
+  before_action :icons_table, except: [:index]
 
   def index
     @tags = current_user.customer.tags
