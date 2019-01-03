@@ -18,7 +18,7 @@ class RoutesControllerTest < ActionController::TestCase
     assert ability.cannot? :manage, @route
 
     get :show, id: routes(:route_one_three)
-    assert_response :redirect
+    assert_response :not_found
   end
 
   test 'should show route' do

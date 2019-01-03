@@ -18,7 +18,7 @@ class ApiWeb::V01::ZonesControllerTest < ActionController::TestCase
     assert @controller.cannot?(:index, zonings(:zoning_three))
 
     get :index, zoning_id: zonings(:zoning_three).id
-    assert_response :redirect
+    assert_response :not_found
     assert_nil assigns(:zones)
   end
 

@@ -43,7 +43,11 @@ class ApplicationController < ActionController::Base
   around_action :track_sub_api_time
 
   rescue_from CanCan::AccessDenied do |exception|
-    redirect_to root_url, alert: exception.message
+    respond_to do |format|
+      format.json {render nothing: true, status: :not_found}
+      format.html {redirect_to root_url, notice: exception.message, status: :not_found}
+      format.js {render nothing: true, status: :not_found}
+    end
   end
 
   def api_key?

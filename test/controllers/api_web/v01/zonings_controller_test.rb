@@ -18,7 +18,7 @@ class ApiWeb::V01::ZoningsControllerTest < ActionController::TestCase
     assert @controller.cannot?(:edit, zonings(:zoning_three))
 
     get :edit, id: zonings(:zoning_three)
-    assert_response :redirect
+    assert_response :not_found
   end
 
   test 'should sign in with api_key' do

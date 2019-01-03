@@ -16,7 +16,7 @@ class UsersControllerTest < ActionController::TestCase
     assert ability.cannot? :manage, @user
 
     get :edit, id: users(:user_three)
-    assert_response :redirect
+    assert_response :not_found
   end
 
   test 'admin user can only manage users from its customer' do

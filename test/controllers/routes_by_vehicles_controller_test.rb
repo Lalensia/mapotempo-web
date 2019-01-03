@@ -18,7 +18,7 @@ class RoutesByVehiclesControllerTest < ActionController::TestCase
     assert ability.cannot? :show, @vehicle
 
     get :show, vehicle_id: vehicles(:vehicle_two).id
-    assert_response :redirect
+    assert_response :not_found
   end
 
   test 'should show routes by vehicle' do

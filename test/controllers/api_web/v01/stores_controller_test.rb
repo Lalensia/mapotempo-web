@@ -20,7 +20,7 @@ class ApiWeb::V01::StoresControllerTest < ActionController::TestCase
     get :index, ids: stores(:store_two).id
     assert_equal 0, assigns(:stores).count
     get :edit_position, id: stores(:store_two)
-    assert_response :redirect
+    assert_response :not_found
   end
 
   test 'should sign in with api_key' do

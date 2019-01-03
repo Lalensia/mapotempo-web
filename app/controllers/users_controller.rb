@@ -18,10 +18,11 @@
 class UsersController < ApplicationController
   layout 'registration', only: [:password, :set_password]
 
-  before_action :set_user, except: [:password, :set_password]
-  before_action :set_user_from_token, only: [:password, :set_password]
-
-  authorize_resource
+  load_and_authorize_resource except: [:password, :set_password]
+  load_and_authorize_resource find_by: :confirmation_token,
+                              id_param: :token,
+                              if: ->{ params[:token].present? },
+                              only: [:password, :set_password]
 
   def edit
     if !@user
@@ -39,9 +40,7 @@ class UsersController < ApplicationController
 
   # bypass_sign_in argument is depreciated, we must use bypass_sign_in method instead
   def password
-    if !@user
-      redirect_to unauthenticated_root_path, alert: t("users.#{action_name}.unauthenticated") and return
-    elsif current_user != @user
+    if current_user != @user
       sign_out :user
       bypass_sign_in(@user)
     end
@@ -62,14 +61,6 @@ class UsersController < ApplicationController
   def redirect_to_default
     # @user in case of token auth
     redirect_to edit_user_path(current_user || @user), notice: t("users.#{action_name}.success")
-  end
-
-  def set_user
-    @user = current_user if current_user && current_user.id == Integer(params[:id])
-  end
-
-  def set_user_from_token
-    @user = User.find_by confirmation_token: params[:token] if !params[:token].nil?
   end
 
   def user_password_params

@@ -23,7 +23,6 @@ class VisitsController < ApplicationController
   def show
     # Not for save/update
     # => Allow using different graph
-    @visit = Visit.find params[:id] || params[:visit_id]
     respond_to do |format|
       format.json
     end

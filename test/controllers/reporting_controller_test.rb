@@ -19,7 +19,7 @@ class ReportingControllerTest < ActionController::TestCase
 
     get :index
 
-    assert_response 302
+    assert_response :not_found
   end
 
   test 'should not get reporting page if not authenticated' do

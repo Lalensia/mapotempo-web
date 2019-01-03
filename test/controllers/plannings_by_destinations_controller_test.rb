@@ -19,7 +19,7 @@ class PlanningsByDestinationsControllerTest < ActionController::TestCase
     assert ability.cannot? :show, @destination
 
     get :show, destination_id: destinations(:destination_four).id
-    assert_response :redirect
+    assert_response :not_found
   end
 
   test 'should show plannings by destination' do

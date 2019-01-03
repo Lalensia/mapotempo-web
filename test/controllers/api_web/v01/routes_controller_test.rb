@@ -18,7 +18,7 @@ class ApiWeb::V01::RoutesControllerTest < ActionController::TestCase
     assert @controller.cannot?(:index, plannings(:planning_three))
 
     get :index, planning_id: plannings(:planning_three)
-    assert_response :redirect
+    assert_response :not_found
     assert_nil assigns(:routes)
   end
 

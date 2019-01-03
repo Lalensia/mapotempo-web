@@ -21,11 +21,12 @@ require 'font_awesome'
 
 class StoresController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_store, only: [:show, :edit, :update, :destroy]
+
+  load_and_authorize_resource if: ->{ params[:store_id].blank? }
+  load_and_authorize_resource id_param: :store_id, if: ->{ params[:store_id].present? }
+
   before_action :icons_table, except: [:index]
   after_action :warnings, only: [:create, :update]
-
-  load_and_authorize_resource
 
   include LinkBack
 
@@ -33,8 +34,6 @@ class StoresController < ApplicationController
     if current_user.customer.job_store_geocoding
       flash.now[:warning] = t('stores.geocoding.geocoding_in_progress')
     end
-
-    @stores = current_user.customer.stores
     respond_to do |format|
       format.html
     end
@@ -45,7 +44,6 @@ class StoresController < ApplicationController
   end
 
   def new
-    @store = current_user.customer.stores.build
     @store.postalcode = current_user.customer.stores[0].postalcode
     @store.city = current_user.customer.stores[0].city
   end
@@ -132,11 +130,6 @@ class StoresController < ApplicationController
   end
 
   private
-
-  # Use callbacks to share common setup or constraints between actions.
-  def set_store
-    @store = current_user.customer.stores.find params[:id] || params[:store_id]
-  end
 
   def warnings
     flash[:warning] = @store.warnings.join(', ') if @store.warnings && @store.warnings.any?

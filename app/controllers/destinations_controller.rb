@@ -20,11 +20,12 @@ require 'importer_destinations'
 
 class DestinationsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_destination, only: [:show, :edit, :update, :destroy]
+
+  load_and_authorize_resource if: ->{ params[:destination_id].blank? }
+  load_and_authorize_resource id_param: :destination_id, if: ->{ params[:destination_id].present? }
+
   after_action :warnings, only: [:create, :update]
   around_action :over_max_limit, only: [:create, :duplicate]
-
-  load_and_authorize_resource
 
   include LinkBack
 
@@ -58,7 +59,6 @@ class DestinationsController < ApplicationController
   end
 
   def new
-    @destination = current_user.customer.destinations.build
     @destination.postalcode = current_user.customer.stores[0].postalcode
     @destination.city = current_user.customer.stores[0].city
   end
@@ -128,11 +128,10 @@ class DestinationsController < ApplicationController
 
   def upload_csv
     respond_to do |format|
-      @importer = ImporterDestinations.new(current_user.customer)
-      @import_csv = ImportCsv.new(import_csv_params.merge(importer: @importer, content_code: :html))
+      @import_csv = ImportCsv.new(import_csv_params.merge(importer: ImporterDestinations.new(current_user.customer), content_code: :html))
       if @import_csv.valid? && @import_csv.import
         if @import_csv.importer.plannings.size == 1 && !current_user.customer.job_destination_geocoding
-          format.html { redirect_to edit_planning_url(@import_csv.importer.plannings.last) }
+          format.html { redirect_to edit_planning_url(Planning.last) }
         elsif @import_csv.importer.plannings.size > 1 && !current_user.customer.job_destination_geocoding
           format.html { redirect_to plannings_url }
         else
@@ -189,11 +188,6 @@ class DestinationsController < ApplicationController
         end
       end
     end
-  end
-
-  # Use callbacks to share common setup or constraints between actions.
-  def set_destination
-    @destination = current_user.customer.destinations.find params[:id] || params[:destination_id]
   end
 
   def warnings
@@ -258,7 +252,7 @@ class DestinationsController < ApplicationController
       :replace,
       :file,
       :delete_plannings,
-      column_def: @importer.columns.keys
+      column_def: ImporterDestinations.new(current_user.customer).columns.keys
     )
   end
 
