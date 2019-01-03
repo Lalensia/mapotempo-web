@@ -20,15 +20,12 @@ class TagsController < ApplicationController
 
   load_and_authorize_resource
 
-  before_action :set_tag, only: [:edit, :update, :destroy]
   before_action :icons_table, except: [:index]
 
   def index
-    @tags = current_user.customer.tags
   end
 
   def new
-    @tag = current_user.customer.tags.build
   end
 
   def edit
@@ -79,11 +76,6 @@ class TagsController < ApplicationController
 
   def icons_table
     @grouped_icons ||= [FontAwesome::ICONS_TABLE_TAG, (FontAwesome::ICONS_TABLE - FontAwesome::ICONS_TABLE_TAG)]
-  end
-
-  # Use callbacks to share common setup or constraints between actions.
-  def set_tag
-    @tag = current_user.customer.tags.find params[:id]
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.

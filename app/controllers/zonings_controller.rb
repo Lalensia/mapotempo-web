@@ -18,9 +18,10 @@
 class ZoningsController < ApplicationController
   before_action :authenticate_user!
 
-  load_and_authorize_resource
+  load_and_authorize_resource if: ->{ params[:zoning_id].blank? }
+  load_and_authorize_resource id_param: :zoning_id, if: ->{ params[:zoning_id].present? }
+  load_and_authorize_resource :planning, id_param: :planning_id, if: ->{ params[:planning_id].present? }
 
-  before_action :set_zoning, only: [:show, :edit, :update, :destroy, :duplicate, :automatic, :from_planning, :isochrone, :isodistance]
   before_action :manage_zoning
   around_action :includes_destinations, only: [:show, :edit, :update, :automatic, :from_planning]
   around_action :over_max_limit, only: [:create, :duplicate]
@@ -28,20 +29,16 @@ class ZoningsController < ApplicationController
   include LinkBack
 
   def index
-    @zonings = current_user.customer.zonings
   end
 
   def show
   end
 
   def new
-    @zoning = current_user.customer.zonings.build
     @plannings = current_user.customer.plannings
-    @planning = params.key?(:planning_id) ? current_user.customer.plannings.find(params[:planning_id]) : nil
   end
 
   def edit
-    @planning = params.key?(:planning_id) && !params[:planning_id].empty? ? current_user.customer.plannings.find(params[:planning_id]) : nil
     @vehicle_usage_set = @planning ? @planning.vehicle_usage_set : @zoning.customer.vehicle_usage_sets[0]
     capabilities
   end
@@ -52,7 +49,6 @@ class ZoningsController < ApplicationController
       if @zoning.save
         format.html { redirect_to edit_zoning_path(@zoning, planning_id: params.key?(:planning_id) ? params[:planning_id] : nil), notice: t('activerecord.successful.messages.created', model: @zoning.class.model_name.human) }
       else
-        @planning = params.key?(:planning_id) ? current_user.customer.plannings.find(params[:planning_id]) : nil
         format.html { render action: 'new' }
       end
     end
@@ -63,7 +59,6 @@ class ZoningsController < ApplicationController
       if @zoning.update(zoning_params)
         format.html { redirect_to link_back || edit_zoning_path(@zoning, planning_id: params.key?(:planning_id) ? params[:planning_id] : nil), notice: t('activerecord.successful.messages.updated', model: @zoning.class.model_name.human) }
       else
-        @planning = params.key?(:planning_id) ? current_user.customer.plannings.find(params[:planning_id]) : nil
         capabilities
         format.html { render action: 'edit' }
       end
@@ -99,7 +94,6 @@ class ZoningsController < ApplicationController
 
   def automatic
     respond_to do |format|
-      @planning = params.key?(:planning_id) ? current_user.customer.plannings.find(params[:planning_id]) : nil
       n = params[:n].to_i if params[:n]
       hide_out_of_route = params[:hide_out_of_route].to_i == 1
       @zoning.automatic_clustering @planning, n, !hide_out_of_route
@@ -110,7 +104,6 @@ class ZoningsController < ApplicationController
 
   def from_planning
     respond_to do |format|
-      @planning = params.key?(:planning_id) ? current_user.customer.plannings.find(params[:planning_id]) : nil
       if @planning
         @zoning.from_planning(@planning)
         @zoning.save!
@@ -146,11 +139,12 @@ class ZoningsController < ApplicationController
     end
   end
 
-  def self.manage
-    Hash[[:edit, :organize].map{ |v| ["manage_#{v}".to_sym, true] }]
-  end
 
   private
+
+  def manage_zoning
+    @manage_zoning = Hash[[:edit, :organize].map{ |v| ["manage_#{v}".to_sym, true] }]
+  end
 
   def capabilities
     vehicle_usage_sets = @planning ? [@planning.vehicle_usage_set] : @zoning.customer.vehicle_usage_sets
@@ -165,19 +159,10 @@ class ZoningsController < ApplicationController
     }
   end
 
-  # Use callbacks to share common setup or constraints between actions.
-  def set_zoning
-    @zoning = current_user.customer.try(:zonings).includes(customer: [vehicle_usage_sets: [vehicle_usages: :vehicle]]).find(params[:id] || params[:zoning_id])
-  end
-
   def includes_destinations
     Route.includes_destinations.scoping do
       yield
     end
-  end
-
-  def manage_zoning
-    @manage_zoning = ZoningsController.manage
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.

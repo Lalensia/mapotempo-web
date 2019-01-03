@@ -20,8 +20,6 @@ class VehicleUsagesController < ApplicationController
 
   load_and_authorize_resource
 
-  before_action :set_vehicle_usage, only: [:edit, :update, :toggle]
-
   include LinkBack
 
   def edit
@@ -70,10 +68,6 @@ class VehicleUsagesController < ApplicationController
         local_params[time] = ChronicDuration.parse("#{params[:vehicle_usage]["#{time}_day".to_sym]} days and #{local_params[time].tr(':', 'h')}min", keep_zero: true)
       end
     end
-  end
-
-  def set_vehicle_usage
-    @vehicle_usage = VehicleUsage.for_customer_id(current_user.customer_id).find params[:id]
   end
 
   def vehicle_usage_params

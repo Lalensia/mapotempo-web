@@ -18,16 +18,14 @@
 class VehicleUsageSetsController < ApplicationController
   before_action :authenticate_user!
 
-  load_and_authorize_resource
+  load_and_authorize_resource if: ->{ params[:vehicle_usage_set_id].blank? }
+  load_and_authorize_resource id_param: :vehicle_usage_set_id, if: ->{ params[:vehicle_usage_set_id].present? }
 
-  before_action :set_vehicle_usage_set, only: [:show, :edit, :update, :destroy, :duplicate]
   around_action :over_max_limit, only: [:create, :duplicate]
 
   include LinkBack
 
   def index
-    @customer = current_user.customer
-    @vehicle_usage_sets = @customer.vehicle_usage_sets.includes([:vehicle_usages, {vehicle_usages: [vehicle: [:router, :customer]]}])
   end
 
   def show
@@ -46,7 +44,6 @@ class VehicleUsageSetsController < ApplicationController
   end
 
   def new
-    @vehicle_usage_set = current_user.customer.vehicle_usage_sets.build
     @vehicle_usage_set.store_start = current_user.customer.stores[0]
     @vehicle_usage_set.store_stop = current_user.customer.stores[0]
   end
@@ -167,11 +164,6 @@ class VehicleUsageSetsController < ApplicationController
     times.each do |time|
       local_params[time] = ChronicDuration.parse("#{params[:vehicle_usage_set]["#{time}_day".to_sym]} days and #{local_params[time].tr(':', 'h')}min", keep_zero: true) unless params[:vehicle_usage_set]["#{time}_day".to_sym].to_s.empty? || local_params[time].to_s.empty?
     end
-  end
-
-  # Use callbacks to share common setup or constraints between actions.
-  def set_vehicle_usage_set
-    @vehicle_usage_set = current_user.customer.vehicle_usage_sets.find params[:id] || params[:vehicle_usage_set_id]
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.

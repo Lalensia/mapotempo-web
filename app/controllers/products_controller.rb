@@ -17,16 +17,13 @@
 #
 class ProductsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_product, only: [:edit, :update, :destroy]
 
   load_and_authorize_resource
 
   def index
-    @products = current_user.customer.products
   end
 
   def new
-    @product = current_user.customer.products.build
   end
 
   def edit
@@ -74,11 +71,6 @@ class ProductsController < ApplicationController
   end
 
   private
-
-  # Use callbacks to share common setup or constraints between actions.
-  def set_product
-    @product = current_user.customer.products.find params[:id]
-  end
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def product_params

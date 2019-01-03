@@ -20,12 +20,10 @@ require 'csv'
 class OrderArraysController < ApplicationController
   before_action :authenticate_user!
 
-  load_and_authorize_resource
-
-  before_action :set_order_array, only: [:show, :edit, :update, :destroy, :duplicate]
+  load_and_authorize_resource if: ->{ params[:order_array_id].blank? }
+  load_and_authorize_resource id_param: :order_array_id, if: ->{ params[:order_array_id].present? }
 
   def index
-    @order_arrays = current_user.customer.order_arrays
   end
 
   def show
@@ -67,7 +65,6 @@ class OrderArraysController < ApplicationController
   end
 
   def new
-    @order_array = current_user.customer.order_arrays.build
     @order_array.base_date = Time.zone.today
   end
 
@@ -126,11 +123,6 @@ class OrderArraysController < ApplicationController
   end
 
   private
-
-  # Use callbacks to share common setup or constraints between actions.
-  def set_order_array
-    @order_array = current_user.customer.order_arrays.find params[:id] || params[:order_array_id]
-  end
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def order_array_params

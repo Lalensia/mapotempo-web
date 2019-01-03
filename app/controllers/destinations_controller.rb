@@ -21,9 +21,9 @@ require 'importer_destinations'
 class DestinationsController < ApplicationController
   before_action :authenticate_user!
 
-  load_and_authorize_resource
+  load_and_authorize_resource if: ->{ params[:destination_id].blank? }
+  load_and_authorize_resource id_param: :destination_id, if: ->{ params[:destination_id].present? }
 
-  before_action :set_destination, only: [:show, :edit, :update, :destroy]
   after_action :warnings, only: [:create, :update]
   around_action :over_max_limit, only: [:create, :duplicate]
 
@@ -52,7 +52,6 @@ class DestinationsController < ApplicationController
   end
 
   def new
-    @destination = current_user.customer.destinations.build
     @destination.postalcode = current_user.customer.stores[0].postalcode
     @destination.city = current_user.customer.stores[0].city
   end
@@ -182,11 +181,6 @@ class DestinationsController < ApplicationController
         end
       end
     end
-  end
-
-  # Use callbacks to share common setup or constraints between actions.
-  def set_destination
-    @destination = current_user.customer.destinations.find params[:id] || params[:destination_id]
   end
 
   def warnings

@@ -20,17 +20,15 @@ require 'font_awesome'
 class DeliverableUnitsController < ApplicationController
   before_action :authenticate_user!
 
-  load_and_authorize_resource
+  load_and_authorize_resource if: ->{ params[:deliverable_unit_id].blank? }
+  load_and_authorize_resource id_param: :deliverable_unit_id, if: ->{ params[:deliverable_unit_id].present? }
 
-  before_action :set_deliverable_unit, only: [:edit, :update, :destroy]
   before_action :icons_table, except: [:index]
 
   def index
-    @deliverable_units = current_user.customer.deliverable_units
   end
 
   def new
-    @deliverable_unit = current_user.customer.deliverable_units.build
   end
 
   def edit
@@ -80,11 +78,6 @@ class DeliverableUnitsController < ApplicationController
   end
 
   private
-
-  # Use callbacks to share common setup or constraints between actions.
-  def set_deliverable_unit
-    @deliverable_unit = current_user.customer.deliverable_units.find params[:id] || params[:deliverable_unit_id]
-  end
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def deliverable_unit_params
