@@ -88,12 +88,12 @@ group :test do
   gem 'chromedriver-helper'
 end
 
-gem 'grape', '< 1'
+gem 'grape', '~> 1.2'
 gem 'grape-entity'
-gem 'grape-swagger', '< 0.26'
-gem 'grape-swagger-entity', '< 0.3'
-gem 'rack-cors'
-gem 'swagger-docs'
+gem 'grape-swagger', '~> 0.32.1'
+gem 'grape-swagger-entity', '~> 0.3.2'
+gem 'rack-cors', require: 'rack/cors'
+gem 'swagger-docs', '~> 0.2.9'
 
 gem 'rails-i18n'
 gem 'http_accept_language'
